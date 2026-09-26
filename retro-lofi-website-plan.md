@@ -78,6 +78,15 @@ retro-lofi/
 - Fase 1: clicar Play → ouvir bateria, baixo, acordes e melodia em sincronia por vários minutos sem "atrasar"; Próxima gera faixa diferente; console sem erros; testar Chrome, Safari e celular.
 - Após cada fase: commit + push; conferir a URL do GitHub Pages funcionando.
 
-## Próximo passo imediato
-0. Salvar este plano como `/Users/jarvis/Projects/retro-lofi/retro-lofi-website-plan.md` (substitui o `plan.md` citado na estrutura de pastas).
-1. Executar a Fase 1 (itens 1–8), explicando cada peça do motor de áudio em português conforme for construída.
+## Status
+- **Fase 1 — concluída** e publicada em https://marcelopolarisglobal.github.io/retro-lofi/
+  (inclui correção para iPhone/iPad: `navigator.audioSession.type = 'playback'`).
+- **Etapa A — qualidade sonora — concluída.** Diagnóstico: som abafado (filtros passa-baixa
+  empilhados, timbres senoidais, baixo inaudível em celular, som seco e mono) e ruído (vinil alto).
+  Mudanças: sem passa-baixa master (passa-alta 30 Hz + high-shelf suave), reverb por envio,
+  estéreo, Rhodes por síntese FM, baixo com saturação, bumbo/caixa/chimbal reforçados,
+  vinil ~85× abaixo da música e humanização de tempo e força.
+- **Etapa B (opcional, futura):** trocar piano/bateria por amostras gravadas CC0.
+
+## Próximo passo
+Fase 2 — controle e polimento musical.

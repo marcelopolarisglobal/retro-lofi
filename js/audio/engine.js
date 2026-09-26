@@ -9,26 +9,44 @@ export function createEngine() {
   master.connect(ctx.destination);
 
   const compressor = ctx.createDynamicsCompressor();
-  compressor.threshold.value = -18;
-  compressor.ratio.value = 3;
+  compressor.threshold.value = -14;
+  compressor.ratio.value = 2.5;
+  compressor.attack.value = 0.01;
+  compressor.release.value = 0.2;
   compressor.connect(master);
 
-  const tone = ctx.createBiquadFilter();
-  tone.type = 'lowpass';
-  tone.frequency.value = 3800;
-  tone.connect(compressor);
+  const warmth = ctx.createBiquadFilter();
+  warmth.type = 'highshelf';
+  warmth.frequency.value = 7000;
+  warmth.gain.value = -3;
+  warmth.connect(compressor);
+
+  const rumbleCut = ctx.createBiquadFilter();
+  rumbleCut.type = 'highpass';
+  rumbleCut.frequency.value = 30;
+  rumbleCut.connect(warmth);
 
   const wobble = createTapeWobble(ctx);
-  wobble.connect(tone);
+  wobble.connect(rumbleCut);
 
   const music = ctx.createGain();
   music.connect(wobble);
+
+  // Barramento de envio: cada instrumento manda uma parte do seu som para a "sala".
+  const reverb = ctx.createGain();
+  const room = ctx.createConvolver();
+  room.buffer = createImpulse(ctx, 2.2);
+  const roomTone = ctx.createBiquadFilter();
+  roomTone.type = 'lowpass';
+  roomTone.frequency.value = 5000;
+  reverb.connect(room).connect(roomTone).connect(wobble);
 
   startVinyl(ctx, master);
 
   return {
     ctx,
     music,
+    reverb,
     noise: createNoiseBuffer(ctx, 2),
     setVolume(value) {
       master.gain.setTargetAtTime(value, ctx.currentTime, 0.05);
@@ -51,6 +69,17 @@ function createTapeWobble(ctx) {
   return delay;
 }
 
+// Resposta de impulso de uma sala: ruído estéreo que se apaga ao longo de alguns segundos.
+function createImpulse(ctx, seconds) {
+  const length = ctx.sampleRate * seconds;
+  const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const data = buffer.getChannelData(channel);
+    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+  }
+  return buffer;
+}
+
 function createNoiseBuffer(ctx, seconds) {
   const buffer = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -62,8 +91,8 @@ function startVinyl(ctx, destination) {
   const buffer = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < data.length; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.02;
-    if (Math.random() < 0.00015) data[i] += (Math.random() * 2 - 1) * Math.random() ** 2;
+    data[i] = (Math.random() * 2 - 1) * 0.004;
+    if (Math.random() < 0.00005) data[i] += (Math.random() * 2 - 1) * Math.random() ** 3 * 0.5;
   }
 
   const source = ctx.createBufferSource();
@@ -71,11 +100,12 @@ function startVinyl(ctx, destination) {
   source.loop = true;
 
   const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 5000;
+  filter.type = 'bandpass';
+  filter.frequency.value = 2000;
+  filter.Q.value = 0.5;
 
   const level = ctx.createGain();
-  level.gain.value = 0.5;
+  level.gain.value = 0.35;
 
   source.connect(filter).connect(level).connect(destination);
   source.start();

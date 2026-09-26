@@ -30,8 +30,12 @@ js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal sint
 
 ## Regras
 - Todo som deve ser agendado com `ctx.currentTime` (tempo do áudio), nunca disparado por `setTimeout`.
-- Cadeia de áudio: instrumentos → `engine.music` → wobble → passa-baixa → compressor → master.
-  O vinil entra direto no master.
+- Cadeia de áudio: instrumentos → `engine.music` → wobble → passa-alta 30 Hz → high-shelf −3 dB
+  (7 kHz) → compressor → master. Sem passa-baixa master (deixava o som abafado).
+- Reverb por envio: cada som sai por `createOutput(engine, pan, reverbSend)` em `instruments.js`,
+  que manda o sinal direto para `engine.music` e uma parte para `engine.reverb` (sala gerada em código).
+  O vinil entra direto no master, bem baixo.
+- Toda nota recebe `velocity` (força) e o compositor humaniza tempo (±6 ms) e força (80–100%).
 - Trocas de faixa só no início de um tempo (`step % 4 === 0`) para manter o swing alinhado.
 - iOS: `navigator.audioSession.type = 'playback'` antes de criar o `AudioContext`, senão a chave
   de silencioso do iPhone emudece o site.

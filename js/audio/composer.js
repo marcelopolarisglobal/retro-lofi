@@ -33,6 +33,8 @@ const rand = (min, max) => min + Math.random() * (max - min);
 const randInt = (min, max) => Math.floor(rand(min, max + 1));
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const humanize = (time) => time + (Math.random() - 0.5) * 0.012;
+const velocity = () => 0.8 + Math.random() * 0.2;
 
 export function composeTrack() {
   const key = randInt(0, 11);
@@ -93,27 +95,30 @@ export function playStep(engine, track, step, time) {
   if (parts.keys) {
     const hit = track.keysRhythm.find((h) => h.step === beat);
     if (hit) {
-      voiceChord(track.key, chord).forEach((midi, i) => {
-        keys(engine, midi, time + i * 0.012, hit.length * stepDuration);
+      const notes = voiceChord(track.key, chord);
+      notes.forEach((midi, i) => {
+        const pan = -0.35 + (0.7 * i) / (notes.length - 1);
+        keys(engine, midi, humanize(time + i * 0.012), hit.length * stepDuration, { velocity: velocity(), pan });
       });
     }
   }
 
   if (parts.bass && kickHit) {
     const interval = beat !== 0 && Math.random() < 0.3 ? 7 : 0;
-    bass(engine, 36 + chordRoot + interval, time, (beat === 0 ? 6 : 3) * stepDuration);
+    bass(engine, 36 + chordRoot + interval, humanize(time), (beat === 0 ? 6 : 3) * stepDuration, { velocity: velocity() });
   }
 
   if (parts.drums) {
-    if (kickHit) kick(engine, time);
-    if (track.drums.snare[beat] === 'x') snare(engine, time);
+    if (kickHit) kick(engine, humanize(time), { velocity: velocity() });
+    if (track.drums.snare[beat] === 'x') snare(engine, humanize(time), { velocity: velocity() });
     if (track.drums.hat[beat] === 'x' && Math.random() > 0.1) {
-      hat(engine, time, beat % 4 === 0 ? 1 : 0.55 + Math.random() * 0.25);
+      const accent = beat % 4 === 0 ? 1 : 0.55 + Math.random() * 0.25;
+      hat(engine, humanize(time), { velocity: accent * velocity() });
     }
   }
 
   if (parts.melody) {
     const note = track.melody[(bar % 4) * STEPS_PER_BAR + beat];
-    if (note) lead(engine, note.midi, time, note.steps * stepDuration);
+    if (note) lead(engine, note.midi, humanize(time), note.steps * stepDuration, { velocity: velocity() });
   }
 }
