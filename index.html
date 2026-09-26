@@ -21,15 +21,76 @@
       <ol class="chords" id="chords"></ol>
     </section>
 
+    <p class="timer-display" id="timer-display" hidden></p>
+
     <div class="controls">
       <button type="button" id="play" aria-pressed="false">▶ Tocar</button>
       <button type="button" id="next" disabled>⏭ Próxima</button>
     </div>
 
-    <label class="volume">
-      Volume
+    <div class="volume">
+      <label for="volume">Volume</label>
       <input type="range" id="volume" min="0" max="100" value="70">
-    </label>
+      <button type="button" class="small" id="mute" aria-pressed="false">Mudo</button>
+    </div>
+
+    <nav class="tabs" aria-label="Painéis">
+      <button type="button" class="tab" data-panel="vibe" aria-expanded="false">Vibe <kbd>V</kbd></button>
+      <button type="button" class="tab" data-panel="mixer" aria-expanded="false">Mixer <kbd>A</kbd></button>
+      <button type="button" class="tab" data-panel="queue" aria-expanded="false">Próximas <kbd>Q</kbd></button>
+      <button type="button" class="tab" data-panel="timer" aria-expanded="false">Timer <kbd>T</kbd></button>
+      <button type="button" class="tab" data-panel="help" aria-expanded="false">Ajuda <kbd>?</kbd></button>
+    </nav>
+
+    <section class="panel" id="panel-vibe" hidden>
+      <h2>Vibe</h2>
+      <div class="options" id="vibe-options"></div>
+      <h2>Formação</h2>
+      <div class="options" id="band-options"></div>
+    </section>
+
+    <section class="panel" id="panel-mixer" hidden>
+      <h2>Mixer</h2>
+      <label class="mixer-row">Teclado <input type="range" data-channel="keys" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Melodia <input type="range" data-channel="melody" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Baixo <input type="range" data-channel="bass" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Bateria <input type="range" data-channel="drums" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Vinil <input type="range" data-channel="vinyl" min="0" max="150" value="100"></label>
+    </section>
+
+    <section class="panel" id="panel-queue" hidden>
+      <h2>Próximas faixas</h2>
+      <ol class="queue" id="queue"></ol>
+    </section>
+
+    <section class="panel" id="panel-timer" hidden>
+      <h2>Foco (Pomodoro)</h2>
+      <div class="options">
+        <button type="button" class="option" data-pomodoro="25,5">25 / 5 min</button>
+        <button type="button" class="option" data-pomodoro="50,10">50 / 10 min</button>
+      </div>
+      <h2>Timer de sono</h2>
+      <div class="options">
+        <button type="button" class="option" data-sleep="15">15 min</button>
+        <button type="button" class="option" data-sleep="30">30 min</button>
+        <button type="button" class="option" data-sleep="60">60 min</button>
+      </div>
+      <button type="button" class="small" id="timer-stop" hidden>Cancelar timer</button>
+    </section>
+
+    <section class="panel" id="panel-help" hidden>
+      <h2>Atalhos</h2>
+      <dl class="shortcuts">
+        <dt><kbd>Espaço</kbd></dt><dd>Tocar / pausar</dd>
+        <dt><kbd>N</kbd></dt><dd>Próxima faixa</dd>
+        <dt><kbd>M</kbd></dt><dd>Mudo</dd>
+        <dt><kbd>V</kbd></dt><dd>Vibe e formação</dd>
+        <dt><kbd>A</kbd></dt><dd>Mixer</dd>
+        <dt><kbd>Q</kbd></dt><dd>Próximas faixas</dd>
+        <dt><kbd>T</kbd></dt><dd>Timers</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Fechar painel</dd>
+      </dl>
+    </section>
   </main>
 
   <script type="module" src="js/app.js"></script>

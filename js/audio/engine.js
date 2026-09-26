@@ -1,3 +1,5 @@
+const CHANNELS = ['keys', 'bass', 'drums', 'melody', 'fx'];
+
 export function createEngine() {
   // No iOS, sem isso a Web Audio é tratada como som de ambiente e a chave de silencioso a emudece.
   if ('audioSession' in navigator) navigator.audioSession.type = 'playback';
@@ -41,15 +43,31 @@ export function createEngine() {
   roomTone.frequency.value = 5000;
   reverb.connect(room).connect(roomTone).connect(wobble);
 
-  startVinyl(ctx, master);
+  // Um canal por instrumento, como numa mesa de som: o volume do som direto e o do envio
+  // ao reverb andam juntos, para que um instrumento silenciado não deixe o eco soando.
+  const channels = Object.fromEntries(CHANNELS.map((name) => {
+    const dry = ctx.createGain();
+    dry.connect(music);
+    const wet = ctx.createGain();
+    wet.connect(reverb);
+    return [name, { dry, wet }];
+  }));
+
+  const vinyl = startVinyl(ctx, master);
 
   return {
     ctx,
-    music,
-    reverb,
+    channels,
     noise: createNoiseBuffer(ctx, 2),
-    setVolume(value) {
-      master.gain.setTargetAtTime(value, ctx.currentTime, 0.05);
+    setVolume(value, fadeSeconds = 0.2) {
+      master.gain.setTargetAtTime(value, ctx.currentTime, fadeSeconds / 4);
+    },
+    setLevel(name, value) {
+      const params = name === 'vinyl' ? [vinyl.gain] : [channels[name].dry.gain, channels[name].wet.gain];
+      params.forEach((param) => param.setTargetAtTime(value, ctx.currentTime, 0.05));
+    },
+    setBrightness(decibels) {
+      warmth.gain.setTargetAtTime(decibels, ctx.currentTime, 0.3);
     },
   };
 }
@@ -107,6 +125,8 @@ function startVinyl(ctx, destination) {
   const level = ctx.createGain();
   level.gain.value = 0.35;
 
-  source.connect(filter).connect(level).connect(destination);
+  const fader = ctx.createGain();
+  source.connect(filter).connect(level).connect(fader).connect(destination);
   source.start();
+  return fader;
 }

@@ -18,8 +18,9 @@ em fases posteriores. O roteiro completo está em `retro-lofi-website-plan.md`.
 ```
 index.html
 css/style.css
-js/app.js                  # estado, eventos, troca de faixas (o "maestro")
-js/ui.js                   # só atualiza a tela
+js/app.js                  # estado (vibe, formação, mudo), fila, atalhos, troca de faixas (o "maestro")
+js/ui.js                   # só atualiza a tela (painéis, fila, opções, timer)
+js/timer.js                # Pomodoro e timer de sono (só conta o tempo e avisa)
 js/audio/engine.js         # AudioContext, cadeia master, wobble de fita, chiado de vinil
 js/audio/scheduler.js      # relógio lookahead: agenda semicolcheias 120 ms à frente
 js/audio/clock.worker.js   # tick de 25 ms num Worker (não desacelera em aba de fundo)
@@ -35,6 +36,10 @@ js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal sint
 - Reverb por envio: cada som sai por `createOutput(engine, pan, reverbSend)` em `instruments.js`,
   que manda o sinal direto para `engine.music` e uma parte para `engine.reverb` (sala gerada em código).
   O vinil entra direto no master, bem baixo.
+- Cada instrumento tem um canal no mixer (`engine.channels`: keys, bass, drums, melody, fx); o
+  volume direto e o envio ao reverb andam juntos. `engine.setLevel(nome, valor)` inclui 'vinyl'.
+- Vibes (`VIBES` em `composer.js`) valem na composição (BPM, swing, densidade, bateria) e no brilho
+  do master. Formações (`BANDS`) só filtram o que soa em `playStep`, por isso valem na hora.
 - Toda nota recebe `velocity` (força) e o compositor humaniza tempo (±6 ms) e força (80–100%).
 - Trocas de faixa só no início de um tempo (`step % 4 === 0`) para manter o swing alinhado.
 - iOS: `navigator.audioSession.type = 'playback'` antes de criar o `AudioContext`, senão a chave

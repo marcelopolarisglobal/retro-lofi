@@ -4,14 +4,14 @@ import { midiToFreq } from './theory.js';
 const SATURATION = new Float32Array(1024).map((_, i) => Math.tanh(2.5 * (i / 511.5 - 1)));
 
 // Saída de cada som: posição no estéreo, sinal direto para a mixagem e uma parte enviada ao reverb.
-function createOutput({ ctx, music, reverb }, pan, reverbSend) {
+function createOutput({ ctx, channels }, channel, pan, reverbSend) {
   const panner = ctx.createStereoPanner();
   panner.pan.value = pan;
-  panner.connect(music);
+  panner.connect(channels[channel].dry);
 
   const send = ctx.createGain();
   send.gain.value = reverbSend;
-  panner.connect(send).connect(reverb);
+  panner.connect(send).connect(channels[channel].wet);
 
   return panner;
 }
@@ -44,7 +44,7 @@ export function keys(engine, midi, time, duration, { velocity, pan }) {
   const end = time + duration;
   const stop = end + 0.6;
 
-  const output = createOutput(engine, pan, 0.25);
+  const output = createOutput(engine, 'keys', pan, 0.25);
   const tone = ctx.createBiquadFilter();
   tone.type = 'lowpass';
   tone.frequency.value = 3000 + 3000 * velocity;
@@ -89,7 +89,7 @@ export function bass(engine, midi, time, duration, { velocity }) {
   const { ctx } = engine;
   const end = time + duration;
 
-  const output = createOutput(engine, 0, 0.05);
+  const output = createOutput(engine, 'bass', 0, 0.05);
   const level = ctx.createGain();
   level.gain.value = 0.3;
   level.connect(output);
@@ -117,7 +117,7 @@ export function lead(engine, midi, time, duration, { velocity }) {
   const { ctx } = engine;
   const end = time + duration;
 
-  const output = createOutput(engine, -0.15, 0.35);
+  const output = createOutput(engine, 'melody', -0.15, 0.35);
   const tone = ctx.createBiquadFilter();
   tone.type = 'lowpass';
   tone.frequency.value = 3500;
@@ -147,7 +147,7 @@ function noiseHit(engine, time, { type, frequency, q, peak, decay, pan, reverbSe
   env.gain.setValueAtTime(peak, time);
   env.gain.exponentialRampToValueAtTime(0.001, time + decay);
 
-  source.connect(filter).connect(env).connect(createOutput(engine, pan, reverbSend));
+  source.connect(filter).connect(env).connect(createOutput(engine, 'drums', pan, reverbSend));
   source.start(time, Math.random() * (noise.duration - 1));
   source.stop(time + decay + 0.02);
 }
@@ -169,7 +169,7 @@ function drumTone(engine, output, time, { type, from, to, peak, decay }) {
 }
 
 export function kick(engine, time, { velocity }) {
-  const output = createOutput(engine, 0, 0.05);
+  const output = createOutput(engine, 'drums', 0, 0.05);
   drumTone(engine, output, time, { type: 'sine', from: 150, to: 45, peak: 0.9 * velocity, decay: 0.5 });
   noiseHit(engine, time, { type: 'highpass', frequency: 3000, q: 0.7, peak: 0.15 * velocity, decay: 0.012, pan: 0, reverbSend: 0 });
 }
@@ -177,11 +177,28 @@ export function kick(engine, time, { velocity }) {
 export function snare(engine, time, { velocity }) {
   noiseHit(engine, time, { type: 'bandpass', frequency: 2000, q: 0.7, peak: 0.3 * velocity, decay: 0.25, pan: 0, reverbSend: 0.3 });
 
-  const output = createOutput(engine, 0, 0.3);
+  const output = createOutput(engine, 'drums', 0, 0.3);
   drumTone(engine, output, time, { type: 'triangle', from: 185, to: 150, peak: 0.15 * velocity, decay: 0.1 });
   drumTone(engine, output, time, { type: 'triangle', from: 330, to: 280, peak: 0.08 * velocity, decay: 0.08 });
 }
 
 export function hat(engine, time, { velocity }) {
   noiseHit(engine, time, { type: 'bandpass', frequency: 9000, q: 0.8, peak: 0.1 * velocity, decay: 0.045, pan: 0.25, reverbSend: 0.12 });
+}
+
+// Sino de aviso: parciais inarmônicas (2,76× e 5,4×) são o que distingue um sino de um piano.
+export function chime(engine, midi, time) {
+  const { ctx } = engine;
+  const output = createOutput(engine, 'fx', 0, 0.4);
+  const freq = midiToFreq(midi);
+  [[1, 0.12], [2.76, 0.04], [5.4, 0.015]].forEach(([ratio, peak]) => {
+    const osc = ctx.createOscillator();
+    osc.frequency.value = freq * ratio;
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(peak, time);
+    env.gain.exponentialRampToValueAtTime(0.0001, time + 2.5);
+    osc.connect(env).connect(output);
+    osc.start(time);
+    osc.stop(time + 2.6);
+  });
 }

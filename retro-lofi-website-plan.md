@@ -83,12 +83,21 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 ### Etapa B — Amostras gravadas (opcional, futura)
 - Trocar piano e/ou bateria por amostras gravadas com licença livre (CC0), caso os sintetizadores ainda soem "de computador". Custo: alguns MB de download e perda do conceito 100% gerado.
 
-### Fase 2 — Controle e polimento musical
+### Fase 2 — Controle e polimento musical ✅ concluída
 - Seletor de Vibe (Chill/Balanced/Upbeat) mudando BPM, brilho do filtro e densidade.
 - Formação (completa / sem bateria / só teclado); mixer por instrumento.
 - "Up Next": mostrar próximas faixas (nome gerado + tonalidade + BPM).
 - Atalhos de teclado (Espaço, N, M, V, ?).
 - Timer Pomodoro (25/5, 50/10) e timer de sono.
+
+**Como foi feito**
+- Vibes: Calmo (60–72 BPM, melodia esparsa, bateria simples, agudos −8 dB), Equilibrado (68–84 BPM, −3 dB), Animado (80–94 BPM, melodia densa, bateria com mais batidas, 0 dB). Trocar a vibe recompõe a fila e troca a faixa atual.
+- Formação: Completa / Sem bateria / Só teclado (acordes + melodia). Vale na hora, sem recompor.
+- Mixer: teclado, melodia, baixo, bateria e vinil (0–150%). Cada instrumento tem seu canal no `engine.js`.
+- Fila "Próximas": 3 faixas já compostas; clicar numa delas a toca em seguida.
+- Atalhos: Espaço, N, M, V, A, Q, T, ?, Esc. Teclas com Cmd/Ctrl/Alt são ignoradas.
+- Timer (`js/timer.js`): Pomodoro com sino sintetizado ao fim de cada fase (descendente = pausa, ascendente = foco); sono com fade de 8 s e pausa.
+- Verificado no Chrome: fila, vibes (BPM dentro da faixa), escolha na fila, mudo, pausa por teclado, ciclos do Pomodoro e fade do sono.
 
 ### Fase 3 — Primeira cena em pixel art
 - `js/scene/`: canvas 480×270, loop com `requestAnimationFrame`, escala inteira pixelada.
@@ -111,4 +120,4 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 - Após cada fase: commit + push; conferir a URL do GitHub Pages funcionando.
 
 ## Próximo passo
-Fase 2 — controle e polimento musical.
+Fase 3 — primeira cena em pixel art.
