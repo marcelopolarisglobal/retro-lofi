@@ -3,7 +3,7 @@
 ## Contexto
 O usuário quer um projeto semelhante ao [Lofi Cities](https://loficities.com/): música lo-fi **gerada ao vivo no navegador** + cenas em pixel art retrô. Prioridade agora: o **motor de música**. Cenários pixel art vêm depois. Publicação no GitHub Pages, como já é feito em `pokedex`, `btc_dashboard` e `website` (repos em `github.com/marcelopolarisglobal`).
 
-Pasta do projeto: `/Users/jarvis/Projects/retro-lofi` (vazia, ainda sem git).
+Pasta do projeto: `/Users/jarvis/Projects/retro-lofi` · Repositório: https://github.com/marcelopolarisglobal/retro-lofi · Site: https://marcelopolarisglobal.github.io/retro-lofi/
 
 ## O que o Lofi Cities faz (estudo)
 - **Música 100% sintetizada** via Web Audio API — sem samples/gravações. Gera progressão de acordes, bateria com swing (68–88 BPM), baixo e melodia, com "tape wobble" (oscilação de fita) e chiado de vinil. Músicas infinitas e sempre novas.
@@ -18,7 +18,7 @@ Pasta do projeto: `/Users/jarvis/Projects/retro-lofi` (vazia, ainda sem git).
 - **Pixel art (fase 3+)**: `<canvas>` 480×270 escalado com `image-rendering: pixelated`.
 - Separação de responsabilidades em módulos ES (`<script type="module">`), igual à regra `api/ui/app` do pokedex.
 
-## Estrutura de pastas (alvo)
+## Estrutura de pastas
 ```
 retro-lofi/
 ├── index.html
@@ -29,8 +29,9 @@ retro-lofi/
     ├── app.js             # estado, eventos, teclado
     ├── ui.js              # desenha controles na tela
     └── audio/
-        ├── engine.js      # AudioContext, mixer master, efeitos (vinil, wobble, filtro)
+        ├── engine.js      # AudioContext, cadeia master, reverb, wobble, vinil
         ├── scheduler.js   # relógio "olhar à frente" que agenda notas no tempo certo
+        ├── clock.worker.js # tique de 25 ms num Worker (não desacelera em aba de fundo)
         ├── theory.js      # escalas, acordes jazz (7ª, 9ª), progressões
         ├── composer.js    # gera faixa: tonalidade, BPM, progressão, melodia
         └── instruments.js # piano elétrico, baixo, kick, snare, hi-hat sintetizados
@@ -38,11 +39,11 @@ retro-lofi/
 
 ## Fases
 
-### Fase 1 — MVP do motor de música (foco principal)
+### Fase 1 — MVP do motor de música ✅ concluída
 1. `git init`, `index.html` com botão Play (necessário: navegador só libera áudio após clique).
-2. `engine.js`: `AudioContext`, cadeia master = compressor → filtro passa-baixa (som "abafado" lo-fi) → saída.
-3. `scheduler.js`: padrão "lookahead" — um `setInterval` a cada ~25 ms agenda notas dos próximos ~100 ms usando `audioContext.currentTime` (relógio preciso do áudio; o `setTimeout` sozinho atrasa e deixa o ritmo torto).
-4. `instruments.js`: 
+2. `engine.js`: `AudioContext` e cadeia master (o passa-baixa master original foi removido na Etapa A por deixar o som abafado).
+3. `scheduler.js`: padrão "lookahead" — um tique a cada 25 ms (rodando num Web Worker) agenda notas dos próximos 120 ms usando `audioContext.currentTime` (relógio preciso do áudio; o `setTimeout` sozinho atrasa e deixa o ritmo torto).
+4. `instruments.js` (versão inicial; timbres refeitos na Etapa A):
    - Keys (Rhodes): 2 osciladores levemente desafinados + envelope ADSR.
    - Baixo: senoide/triangular grave.
    - Bateria: kick (senoide com queda rápida de frequência), snare e hi-hat (ruído branco filtrado).
@@ -50,6 +51,37 @@ retro-lofi/
 6. Efeitos de textura: chiado de vinil (ruído + estalos aleatórios) e wobble (LFO lento no pitch).
 7. Controles: Play/Pause, Próxima faixa, volume. Faixa dura ~2–3 min e troca sozinha.
 8. Publicar: repo `retro-lofi` no GitHub + GitHub Pages ativo.
+9. Correção iPhone/iPad: `navigator.audioSession.type = 'playback'` (sem isso a chave de silencioso emudece a Web Audio) e `ctx.resume()` ao criar o motor.
+
+### Etapa A — Qualidade sonora ✅ concluída
+Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado (sem amostras).
+
+**Diagnóstico**
+- Abafado: passa-baixas empilhados (master 3800 Hz + teclado 2200 Hz + melodia 1800 Hz); timbres quase só senoidais (sem harmônicos); baixo de 65–123 Hz inaudível em alto-falante de celular; som seco e mono.
+- Ruído: chiado de vinil constante e mais alto que a música nos trechos calmos.
+
+**Ajustes no estúdio (`engine.js`)**
+- Cadeia nova: instrumentos → wobble de fita → passa-alta 30 Hz → high-shelf −3 dB em 7 kHz → compressor (threshold −14, ratio 2.5, attack 10 ms, release 200 ms) → master.
+- Reverb por envio: `ConvolverNode` com resposta de impulso gerada em código (ruído estéreo decaindo em 2,2 s), com o retorno filtrado em 5 kHz.
+- Vinil discreto: chiado 5× mais baixo e filtrado (passa-banda 2 kHz), estalos raros e pequenos; nível medido ~85× abaixo da intro.
+
+**Ajustes nos instrumentos (`instruments.js`)**
+- Toda nota tem posição no estéreo (pan), envio de reverb e força (velocity).
+- Rhodes por síntese FM: portadora + moduladora 1:1, índice de modulação alto no ataque decaindo em ~0,25 s, dois pares desafinados ±5 cents (coro) e um "sino" curto em 14× a frequência. Filtro abre com a força da nota (3–6 kHz). Envio de reverb 25%.
+- Baixo: senoide + triangular → saturação suave (curva tanh) → passa-baixa 1200 Hz. Os harmônicos da saturação tornam o grave audível em celulares.
+- Melodia: triangular + senoide oitava acima, filtro 3500 Hz, pan levemente à esquerda, reverb 35%.
+- Bumbo: queda de 150→45 Hz em 0,5 s + "clique" de ataque (ruído de 12 ms acima de 3 kHz).
+- Caixa: ruído em 2 kHz com cauda de 250 ms + dois tons de corpo (185 e 330 Hz), reverb 30%.
+- Chimbal: ruído passa-banda em 9 kHz, pan levemente à direita.
+
+**Ajustes no compositor (`composer.js`)**
+- Humanização: ±6 ms de variação no tempo e força entre 80–100% em cada nota.
+- Notas do acorde abertas no estéreo, da esquerda para a direita.
+
+**Medição (30 s renderizados com `OfflineAudioContext`)**: pico 0,675 (sem distorção), volume médio intro 0,026 → groove 0,121, estéreo ativo, sem erros.
+
+### Etapa B — Amostras gravadas (opcional, futura)
+- Trocar piano e/ou bateria por amostras gravadas com licença livre (CC0), caso os sintetizadores ainda soem "de computador". Custo: alguns MB de download e perda do conceito 100% gerado.
 
 ### Fase 2 — Controle e polimento musical
 - Seletor de Vibe (Chill/Balanced/Upbeat) mudando BPM, brilho do filtro e densidade.
@@ -77,16 +109,6 @@ retro-lofi/
 - Rodar local: `python3 -m http.server 8000` na pasta e abrir `http://localhost:8000` (módulos ES não funcionam abrindo o arquivo direto).
 - Fase 1: clicar Play → ouvir bateria, baixo, acordes e melodia em sincronia por vários minutos sem "atrasar"; Próxima gera faixa diferente; console sem erros; testar Chrome, Safari e celular.
 - Após cada fase: commit + push; conferir a URL do GitHub Pages funcionando.
-
-## Status
-- **Fase 1 — concluída** e publicada em https://marcelopolarisglobal.github.io/retro-lofi/
-  (inclui correção para iPhone/iPad: `navigator.audioSession.type = 'playback'`).
-- **Etapa A — qualidade sonora — concluída.** Diagnóstico: som abafado (filtros passa-baixa
-  empilhados, timbres senoidais, baixo inaudível em celular, som seco e mono) e ruído (vinil alto).
-  Mudanças: sem passa-baixa master (passa-alta 30 Hz + high-shelf suave), reverb por envio,
-  estéreo, Rhodes por síntese FM, baixo com saturação, bumbo/caixa/chimbal reforçados,
-  vinil ~85× abaixo da música e humanização de tempo e força.
-- **Etapa B (opcional, futura):** trocar piano/bateria por amostras gravadas CC0.
 
 ## Próximo passo
 Fase 2 — controle e polimento musical.
