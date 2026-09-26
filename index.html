@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Lo-fi</title>
+  <meta name="description" content="Música lo-fi composta ao vivo no seu navegador.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="player">
+    <h1 class="title">Retro Lo-fi</h1>
+    <p class="subtitle">música lo-fi composta ao vivo no seu navegador</p>
+
+    <section class="track" aria-live="polite">
+      <p class="track-name" id="track-name">—</p>
+      <p class="track-meta" id="track-meta">Clique em tocar para começar</p>
+      <ol class="chords" id="chords"></ol>
+    </section>
+
+    <div class="controls">
+      <button type="button" id="play" aria-pressed="false">▶ Tocar</button>
+      <button type="button" id="next" disabled>⏭ Próxima</button>
+    </div>
+
+    <label class="volume">
+      Volume
+      <input type="range" id="volume" min="0" max="100" value="70">
+    </label>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
