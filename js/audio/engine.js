@@ -53,17 +53,19 @@ export function createEngine() {
     return [name, { dry, wet }];
   }));
 
-  const vinyl = startVinyl(ctx, master);
+  const faders = { vinyl: startVinyl(ctx, master), ambience: ctx.createGain() };
+  faders.ambience.connect(master);
 
   return {
     ctx,
     channels,
+    ambience: faders.ambience,
     noise: createNoiseBuffer(ctx, 2),
     setVolume(value, fadeSeconds = 0.2) {
       master.gain.setTargetAtTime(value, ctx.currentTime, fadeSeconds / 4);
     },
     setLevel(name, value) {
-      const params = name === 'vinyl' ? [vinyl.gain] : [channels[name].dry.gain, channels[name].wet.gain];
+      const params = faders[name] ? [faders[name].gain] : [channels[name].dry.gain, channels[name].wet.gain];
       params.forEach((param) => param.setTargetAtTime(value, ctx.currentTime, 0.05));
     },
     setBrightness(decibels) {
@@ -98,7 +100,7 @@ function createImpulse(ctx, seconds) {
   return buffer;
 }
 
-function createNoiseBuffer(ctx, seconds) {
+export function createNoiseBuffer(ctx, seconds) {
   const buffer = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;

@@ -2,6 +2,10 @@ import { createEngine } from './audio/engine.js';
 import { createScheduler } from './audio/scheduler.js';
 import { composeTrack, playStep, VIBES, BANDS } from './audio/composer.js';
 import { chime } from './audio/instruments.js';
+import { startRain } from './audio/ambience.js';
+import { startScene } from './scene/renderer.js';
+import { createRainyWindow } from './scene/rainy-window.js';
+import { createAutoHide } from './autohide.js';
 import { createTimer } from './timer.js';
 import * as ui from './ui.js';
 
@@ -56,6 +60,7 @@ function applyMixer() {
 
 function startEngine() {
   engine = createEngine();
+  startRain(engine);
   applyVolume();
   applyMixer();
   engine.setBrightness(VIBES[settings.vibe].brightness);
@@ -141,15 +146,28 @@ const timer = createTimer({
   onSleep: fallAsleep,
 });
 
+function toggleFullscreen() {
+  if (!document.fullscreenEnabled) return;
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+}
+
+const autoHide = createAutoHide({
+  canIdle: () => engine?.ctx.state === 'running' && !ui.isAnyPanelOpen(),
+  onChange: ui.setUiHidden,
+});
+
 const SHORTCUTS = {
   ' ': togglePlay,
   n: skip,
   m: toggleMute,
   v: () => ui.togglePanel('vibe'),
-  a: () => ui.togglePanel('mixer'),
+  x: () => ui.togglePanel('mixer'),
   q: () => ui.togglePanel('queue'),
   t: () => ui.togglePanel('timer'),
   '?': () => ui.togglePanel('help'),
+  h: autoHide.toggle,
+  f: toggleFullscreen,
   escape: ui.closePanels,
 };
 
@@ -161,10 +179,15 @@ document.addEventListener('keydown', (event) => {
   action();
 });
 
+// O toque na cena é tratado antes da atividade geral (o evento chega primeiro ao canvas).
+ui.sceneCanvas.addEventListener('pointerdown', autoHide.toggle);
+['pointermove', 'pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, autoHide.activity));
+
 ui.playButton.addEventListener('click', togglePlay);
 ui.nextButton.addEventListener('click', skip);
 ui.volumeSlider.addEventListener('input', applyVolume);
 ui.muteButton.addEventListener('click', toggleMute);
+ui.fullscreenButton.addEventListener('click', toggleFullscreen);
 ui.mixerPanel.addEventListener('input', applyMixer);
 ui.timerStopButton.addEventListener('click', timer.stop);
 ui.tabs.forEach((tab) => tab.addEventListener('click', () => ui.togglePanel(tab.dataset.panel)));
@@ -192,6 +215,8 @@ ui.timerPanel.addEventListener('click', (event) => {
   }
 });
 
+ui.fullscreenButton.hidden = !document.fullscreenEnabled;
 ui.renderOptions(ui.vibeOptions, VIBES, settings.vibe);
 ui.renderOptions(ui.bandOptions, BANDS, settings.band);
 refillQueue();
+startScene(ui.sceneCanvas, createRainyWindow());

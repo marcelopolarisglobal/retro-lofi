@@ -99,11 +99,25 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 - Timer (`js/timer.js`): Pomodoro com sino sintetizado ao fim de cada fase (descendente = pausa, ascendente = foco); sono com fade de 8 s e pausa.
 - Verificado no Chrome: fila, vibes (BPM dentro da faixa), escolha na fila, mudo, pausa por teclado, ciclos do Pomodoro e fade do sono.
 
-### Fase 3 — Primeira cena em pixel art
+### Fase 3 — Primeira cena em pixel art ✅ concluída
 - `js/scene/`: canvas 480×270, loop com `requestAnimationFrame`, escala inteira pixelada.
 - Uma cena (ex.: janela com chuva à noite): fundo estático + camadas animadas (chuva, luzes piscando, nuvens).
 - Sons ambientes da cena (chuva sintetizada) com slider próprio.
 - UI que se esconde após inatividade (H para alternar), tela cheia (F).
+
+**Como foi feito**
+- Cena "Janela chuvosa" (`js/scene/rainy-window.js`), 100% desenhada em código: céu em faixas pontilhadas, lua, nuvens em movimento, cidade gerada com semente (sempre igual), janelas que piscam, antena, chuva lá fora, gotas escorrendo no vidro, varal de luzinhas, gato com rabo animado, planta, caneca com vapor, luminária e estante.
+- Camadas estáticas pré-desenhadas; loop de 24 quadros/s (`js/scene/renderer.js`), pausa sozinho com a aba escondida.
+- Chuva sintetizada (`js/audio/ambience.js`): chiado com rajadas, ronco grave e gotas; slider "Chuva" no mixer.
+- Interface esconde após 4 s parada (se a música toca e nenhum painel está aberto); H ou toque na cena alternam. Tela cheia (F) quando o navegador permite (não existe no iPhone).
+- Atalho do mixer mudou de A para X.
+
+**Adaptação para celular**
+- Cena cobre a tela e corta as laterais; o essencial fica no centro. Foco vertical 35% em telas largas.
+- Celular em pé: cena sobe 10% para o gato e o parapeito ficarem acima do cartão; cartão compacto (261 px no iPhone de 390×844), sem título e sem letras de atalho, cada grupo numa linha.
+- Celular deitado: cartão na lateral esquerda, rolando por dentro.
+- Áreas seguras do iPhone (`env(safe-area-inset-*)`), `100dvh`, botões ≥ 40 px em telas de toque.
+- Verificado em molduras de 390×844 e 844×390 no Chrome; teste real no iPhone fica com o usuário.
 
 ### Fase 4 — Múltiplos ambientes
 - Formato de dados por cena (paleta, camadas, clima, sons ambientes) para adicionar cenas sem mexer no motor.
@@ -120,4 +134,4 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 - Após cada fase: commit + push; conferir a URL do GitHub Pages funcionando.
 
 ## Próximo passo
-Fase 3 — primeira cena em pixel art.
+Fase 4 — múltiplos ambientes.

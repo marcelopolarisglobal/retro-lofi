@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f2a">
   <title>Retro Lo-fi</title>
   <meta name="description" content="Música lo-fi composta ao vivo no seu navegador.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +12,8 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <canvas class="scene" id="scene" role="img" aria-label="Janela de um quarto à noite com chuva e a cidade iluminada ao fundo. Um gato observa a chuva no parapeito."></canvas>
+
   <main class="player">
     <h1 class="title">Retro Lo-fi</h1>
     <p class="subtitle">música lo-fi composta ao vivo no seu navegador</p>
@@ -32,11 +35,12 @@
       <label for="volume">Volume</label>
       <input type="range" id="volume" min="0" max="100" value="70">
       <button type="button" class="small" id="mute" aria-pressed="false">Mudo</button>
+      <button type="button" class="small" id="fullscreen" hidden>Tela cheia</button>
     </div>
 
     <nav class="tabs" aria-label="Painéis">
       <button type="button" class="tab" data-panel="vibe" aria-expanded="false">Vibe <kbd>V</kbd></button>
-      <button type="button" class="tab" data-panel="mixer" aria-expanded="false">Mixer <kbd>A</kbd></button>
+      <button type="button" class="tab" data-panel="mixer" aria-expanded="false">Mixer <kbd>X</kbd></button>
       <button type="button" class="tab" data-panel="queue" aria-expanded="false">Próximas <kbd>Q</kbd></button>
       <button type="button" class="tab" data-panel="timer" aria-expanded="false">Timer <kbd>T</kbd></button>
       <button type="button" class="tab" data-panel="help" aria-expanded="false">Ajuda <kbd>?</kbd></button>
@@ -56,6 +60,7 @@
       <label class="mixer-row">Baixo <input type="range" data-channel="bass" min="0" max="150" value="100"></label>
       <label class="mixer-row">Bateria <input type="range" data-channel="drums" min="0" max="150" value="100"></label>
       <label class="mixer-row">Vinil <input type="range" data-channel="vinyl" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Chuva <input type="range" data-channel="ambience" min="0" max="150" value="100"></label>
     </section>
 
     <section class="panel" id="panel-queue" hidden>
@@ -85,9 +90,11 @@
         <dt><kbd>N</kbd></dt><dd>Próxima faixa</dd>
         <dt><kbd>M</kbd></dt><dd>Mudo</dd>
         <dt><kbd>V</kbd></dt><dd>Vibe e formação</dd>
-        <dt><kbd>A</kbd></dt><dd>Mixer</dd>
+        <dt><kbd>X</kbd></dt><dd>Mixer</dd>
         <dt><kbd>Q</kbd></dt><dd>Próximas faixas</dd>
         <dt><kbd>T</kbd></dt><dd>Timers</dd>
+        <dt><kbd>H</kbd></dt><dd>Esconder / mostrar a interface (ou toque na cena)</dd>
+        <dt><kbd>F</kbd></dt><dd>Tela cheia</dd>
         <dt><kbd>Esc</kbd></dt><dd>Fechar painel</dd>
       </dl>
     </section>

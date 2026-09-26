@@ -4,6 +4,8 @@ export const playButton = $('#play');
 export const nextButton = $('#next');
 export const volumeSlider = $('#volume');
 export const muteButton = $('#mute');
+export const fullscreenButton = $('#fullscreen');
+export const sceneCanvas = $('#scene');
 export const vibeOptions = $('#vibe-options');
 export const bandOptions = $('#band-options');
 export const mixerPanel = $('#panel-mixer');
@@ -74,6 +76,14 @@ export function togglePanel(name) {
   panels.forEach((panel) => { panel.hidden = true; });
   target.hidden = !opening;
   tabs.forEach((tab) => tab.setAttribute('aria-expanded', String(opening && tab.dataset.panel === name)));
+}
+
+export function isAnyPanelOpen() {
+  return [...panels].some((panel) => !panel.hidden);
+}
+
+export function setUiHidden(hidden) {
+  document.body.classList.toggle('ui-hidden', hidden);
 }
 
 export function closePanels() {

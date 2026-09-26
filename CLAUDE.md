@@ -21,12 +21,16 @@ css/style.css
 js/app.js                  # estado (vibe, formação, mudo), fila, atalhos, troca de faixas (o "maestro")
 js/ui.js                   # só atualiza a tela (painéis, fila, opções, timer)
 js/timer.js                # Pomodoro e timer de sono (só conta o tempo e avisa)
+js/autohide.js             # esconde a interface por ociosidade (4 s) ou por pedido (H / toque na cena)
+js/scene/renderer.js       # loop de animação a 24 quadros/s na resolução nativa da cena
+js/scene/rainy-window.js   # cena "Janela chuvosa" (480×270) desenhada em código
 js/audio/engine.js         # AudioContext, cadeia master, wobble de fita, chiado de vinil
 js/audio/scheduler.js      # relógio lookahead: agenda semicolcheias 120 ms à frente
 js/audio/clock.worker.js   # tick de 25 ms num Worker (não desacelera em aba de fundo)
 js/audio/theory.js         # notas, acordes, progressões, voicings
 js/audio/composer.js       # compõe a faixa (composeTrack) e a executa passo a passo (playStep)
-js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal sintetizados
+js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal e sino sintetizados
+js/audio/ambience.js       # sons ambientes da cena (chuva), fora da cadeia da música
 ```
 
 ## Regras
@@ -45,4 +49,11 @@ js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal sint
 - iOS: `navigator.audioSession.type = 'playback'` antes de criar o `AudioContext`, senão a chave
   de silencioso do iPhone emudece o site.
 - Pausa = `ctx.suspend()`; o agendador para sozinho porque o relógio do áudio congela.
+- Cena: canvas em resolução nativa ampliado por CSS (`object-fit: cover` + `image-rendering: pixelated`).
+  Camadas estáticas são pré-desenhadas uma vez; só o que se mexe é redesenhado a cada quadro.
+  Elementos importantes ficam no centro (visível no celular em pé); `focusX`/`focusY` da cena
+  definem o ponto de corte. No celular em pé a cena sobe 10% para o gato ficar acima do cartão.
+- Celular: `100dvh`, `env(safe-area-inset-*)`, alvos ≥ 40 px em `pointer: coarse`, cartão compacto
+  (sem título nem letras de atalho) e cada grupo de controles numa linha só.
+- Atalhos: Espaço, N, M, V, X (mixer), Q, T, H, F, ?, Esc.
 - Interface em português; textos inseridos com `textContent` (nunca `innerHTML`).
