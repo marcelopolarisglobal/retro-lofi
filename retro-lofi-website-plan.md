@@ -119,6 +119,13 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 - Áreas seguras do iPhone (`env(safe-area-inset-*)`), `100dvh`, botões ≥ 40 px em telas de toque.
 - Verificado em molduras de 390×844 e 844×390 no Chrome; teste real no iPhone fica com o usuário.
 
+**Ajustes pós-Fase 3 (arte e áudio)**
+- Áudio: chuva com volume máximo pela metade; estalos do vinil 2× mais fortes; ambos começam em 5% no mixer.
+- Arte refeita com referência na prévia de Paris do loficities.com: paredes em tábuas de madeira com veios, viga, lambri, piso, vinheta, luz quente da luminária e luz fria da janela; moldura creme com 4 vidraças; varal de luzinhas âmbar; planta pendurada.
+- Gato 50% maior, preto e branco, de frente, com contorno, olhos verdes que piscam e rabo animado. Vaso e caneca 30% maiores, aproximados do centro para aparecerem no celular em pé.
+- Mesa sob a estante com vitrola em perspectiva (disco gira só com a música tocando), capa de álbum e caixote de discos.
+- Celulares estreitos (≤ 380 px): rótulo "Volume" oculto visualmente e abas mais justas para caber em uma linha.
+
 ### Fase 4 — Múltiplos ambientes
 - Formato de dados por cena (paleta, camadas, clima, sons ambientes) para adicionar cenas sem mexer no motor.
 - Troca de cena com ←/→ e swipe no celular; rotação automática.

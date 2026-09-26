@@ -32,7 +32,7 @@
     </div>
 
     <div class="volume">
-      <label for="volume">Volume</label>
+      <label for="volume" class="volume-label">Volume</label>
       <input type="range" id="volume" min="0" max="100" value="70">
       <button type="button" class="small" id="mute" aria-pressed="false">Mudo</button>
       <button type="button" class="small" id="fullscreen" hidden>Tela cheia</button>
@@ -59,8 +59,8 @@
       <label class="mixer-row">Melodia <input type="range" data-channel="melody" min="0" max="150" value="100"></label>
       <label class="mixer-row">Baixo <input type="range" data-channel="bass" min="0" max="150" value="100"></label>
       <label class="mixer-row">Bateria <input type="range" data-channel="drums" min="0" max="150" value="100"></label>
-      <label class="mixer-row">Vinil <input type="range" data-channel="vinyl" min="0" max="150" value="100"></label>
-      <label class="mixer-row">Chuva <input type="range" data-channel="ambience" min="0" max="150" value="100"></label>
+      <label class="mixer-row">Vinil <input type="range" data-channel="vinyl" min="0" max="150" value="5"></label>
+      <label class="mixer-row">Chuva <input type="range" data-channel="ambience" min="0" max="150" value="5"></label>
     </section>
 
     <section class="panel" id="panel-queue" hidden>

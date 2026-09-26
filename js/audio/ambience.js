@@ -4,6 +4,9 @@ import { createNoiseBuffer } from './engine.js';
 // Vai direto para o fader de ambiente, fora da cadeia da música (sem wobble de fita).
 export function startRain({ ctx, ambience }) {
   const noise = createNoiseBuffer(ctx, 5);
+  const output = ctx.createGain();
+  output.gain.value = 0.5;
+  output.connect(ambience);
 
   const hiss = ctx.createBufferSource();
   hiss.buffer = noise;
@@ -19,7 +22,7 @@ export function startRain({ ctx, ambience }) {
   const lfoDepth = ctx.createGain();
   lfoDepth.gain.value = 0.025;
   lfo.connect(lfoDepth).connect(gusts.gain);
-  hiss.connect(band).connect(gusts).connect(ambience);
+  hiss.connect(band).connect(gusts).connect(output);
 
   const rumbleSource = ctx.createBufferSource();
   rumbleSource.buffer = noise;
@@ -29,7 +32,7 @@ export function startRain({ ctx, ambience }) {
   rumbleFilter.frequency.value = 300;
   const rumbleLevel = ctx.createGain();
   rumbleLevel.gain.value = 0.12;
-  rumbleSource.connect(rumbleFilter).connect(rumbleLevel).connect(ambience);
+  rumbleSource.connect(rumbleFilter).connect(rumbleLevel).connect(output);
 
   const drops = ctx.createBufferSource();
   drops.buffer = createDropsBuffer(ctx, 4, 25);
@@ -39,7 +42,7 @@ export function startRain({ ctx, ambience }) {
   dropsFilter.frequency.value = 1000;
   const dropsLevel = ctx.createGain();
   dropsLevel.gain.value = 0.5;
-  drops.connect(dropsFilter).connect(dropsLevel).connect(ambience);
+  drops.connect(dropsFilter).connect(dropsLevel).connect(output);
 
   lfo.start();
   hiss.start();

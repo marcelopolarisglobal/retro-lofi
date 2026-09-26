@@ -13,12 +13,19 @@ const QUEUE_SIZE = 3;
 const SLEEP_FADE_SECONDS = 8;
 
 const settings = { vibe: 'balanced', band: 'full', muted: false };
+const scene = createRainyWindow();
 let engine = null;
 let scheduler = null;
 let track = null;
 let queue = [];
 let trackStartStep = 0;
 let skipRequested = false;
+
+// A vitrola da cena gira junto com a música.
+function setPlaying(playing) {
+  ui.setPlaying(playing);
+  scene.setPlaying(playing);
+}
 
 function refillQueue() {
   while (queue.length < QUEUE_SIZE) queue.push(composeTrack(settings.vibe));
@@ -67,7 +74,7 @@ function startEngine() {
   scheduler = createScheduler(engine.ctx, onStep);
   startTrack(0, engine.ctx.currentTime);
   scheduler.start();
-  ui.setPlaying(true);
+  setPlaying(true);
 }
 
 async function togglePlay() {
@@ -77,10 +84,10 @@ async function togglePlay() {
   }
   if (engine.ctx.state === 'running') {
     await engine.ctx.suspend();
-    ui.setPlaying(false);
+    setPlaying(false);
   } else {
     await engine.ctx.resume();
-    ui.setPlaying(true);
+    setPlaying(true);
   }
 }
 
@@ -92,7 +99,7 @@ async function skip() {
   skipRequested = true;
   if (engine.ctx.state !== 'running') {
     await engine.ctx.resume();
-    ui.setPlaying(true);
+    setPlaying(true);
   }
 }
 
@@ -136,7 +143,7 @@ function fallAsleep() {
   setTimeout(async () => {
     await engine.ctx.suspend();
     applyVolume();
-    ui.setPlaying(false);
+    setPlaying(false);
   }, SLEEP_FADE_SECONDS * 1000);
 }
 
@@ -219,4 +226,4 @@ ui.fullscreenButton.hidden = !document.fullscreenEnabled;
 ui.renderOptions(ui.vibeOptions, VIBES, settings.vibe);
 ui.renderOptions(ui.bandOptions, BANDS, settings.band);
 refillQueue();
-startScene(ui.sceneCanvas, createRainyWindow());
+startScene(ui.sceneCanvas, scene);

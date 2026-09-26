@@ -23,7 +23,7 @@ js/ui.js                   # só atualiza a tela (painéis, fila, opções, time
 js/timer.js                # Pomodoro e timer de sono (só conta o tempo e avisa)
 js/autohide.js             # esconde a interface por ociosidade (4 s) ou por pedido (H / toque na cena)
 js/scene/renderer.js       # loop de animação a 24 quadros/s na resolução nativa da cena
-js/scene/rainy-window.js   # cena "Janela chuvosa" (480×270) desenhada em código
+js/scene/rainy-window.js   # cena "Janela chuvosa" (480×270) desenhada em código; setPlaying gira a vitrola
 js/audio/engine.js         # AudioContext, cadeia master, wobble de fita, chiado de vinil
 js/audio/scheduler.js      # relógio lookahead: agenda semicolcheias 120 ms à frente
 js/audio/clock.worker.js   # tick de 25 ms num Worker (não desacelera em aba de fundo)
@@ -55,5 +55,11 @@ js/audio/ambience.js       # sons ambientes da cena (chuva), fora da cadeia da m
   definem o ponto de corte. No celular em pé a cena sobe 10% para o gato ficar acima do cartão.
 - Celular: `100dvh`, `env(safe-area-inset-*)`, alvos ≥ 40 px em `pointer: coarse`, cartão compacto
   (sem título nem letras de atalho) e cada grupo de controles numa linha só.
+- Arte (referência: prévia de Paris do loficities.com): interior em madeira quente com veios
+  (`woodRect`), luz em faixas semitransparentes (`glow`), vinheta nos cantos, contraste com o azul
+  frio da janela. Objetos com três tons (base, luz, sombra); o gato tem contorno escuro.
+- No celular em pé só ~110–125 px centrais da cena aparecem: vaso (x 190), gato (x 228) e caneca
+  (x 268) ficam nessa faixa de propósito.
+- Mixer: vinil e chuva começam em 5% (`value="5"` no `index.html`).
 - Atalhos: Espaço, N, M, V, X (mixer), Q, T, H, F, ?, Esc.
 - Interface em português; textos inseridos com `textContent` (nunca `innerHTML`).

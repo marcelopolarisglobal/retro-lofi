@@ -112,7 +112,7 @@ function startVinyl(ctx, destination) {
   const data = buffer.getChannelData(0);
   for (let i = 0; i < data.length; i++) {
     data[i] = (Math.random() * 2 - 1) * 0.004;
-    if (Math.random() < 0.00005) data[i] += (Math.random() * 2 - 1) * Math.random() ** 3 * 0.5;
+    if (Math.random() < 0.00005) data[i] += (Math.random() * 2 - 1) * Math.random() ** 3;
   }
 
   const source = ctx.createBufferSource();

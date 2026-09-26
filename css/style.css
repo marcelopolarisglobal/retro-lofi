@@ -332,6 +332,26 @@ kbd {
   }
 }
 
+/* Celulares estreitos (~360 px): tudo ainda numa linha só. O rótulo "Volume" some
+   da vista, mas continua disponível para leitores de tela. */
+@media (max-width: 380px) {
+  .volume-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .tabs {
+    gap: 4px;
+  }
+
+  .tab {
+    padding: 8px 4px;
+  }
+}
+
 /* Celular em pé: sobe a cena para o parapeito e o gato ficarem acima do cartão.
    A faixa que sobra embaixo fica atrás do cartão, na cor do rodapé do quarto. */
 @media (max-width: 600px) and (orientation: portrait) {
