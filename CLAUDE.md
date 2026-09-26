@@ -33,5 +33,7 @@ js/audio/instruments.js    # teclado, baixo, melodia, bumbo, caixa, chimbal sint
 - Cadeia de áudio: instrumentos → `engine.music` → wobble → passa-baixa → compressor → master.
   O vinil entra direto no master.
 - Trocas de faixa só no início de um tempo (`step % 4 === 0`) para manter o swing alinhado.
+- iOS: `navigator.audioSession.type = 'playback'` antes de criar o `AudioContext`, senão a chave
+  de silencioso do iPhone emudece o site.
 - Pausa = `ctx.suspend()`; o agendador para sozinho porque o relógio do áudio congela.
 - Interface em português; textos inseridos com `textContent` (nunca `innerHTML`).

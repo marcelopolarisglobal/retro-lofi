@@ -1,5 +1,9 @@
 export function createEngine() {
+  // No iOS, sem isso a Web Audio é tratada como som de ambiente e a chave de silencioso a emudece.
+  if ('audioSession' in navigator) navigator.audioSession.type = 'playback';
+
   const ctx = new AudioContext();
+  ctx.resume();
 
   const master = ctx.createGain();
   master.connect(ctx.destination);
