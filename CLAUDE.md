@@ -58,8 +58,11 @@ js/audio/ambience.js       # sons ambientes da cena (chuva), fora da cadeia da m
 - Arte (referência: prévia de Paris do loficities.com): interior em madeira quente com veios
   (`woodRect`), luz em faixas semitransparentes (`glow`), vinheta nos cantos, contraste com o azul
   frio da janela. Objetos com três tons (base, luz, sombra); o gato tem contorno escuro.
-- No celular em pé só ~110–125 px centrais da cena aparecem: vaso (x 190), gato (x 228) e caneca
-  (x 268) ficam nessa faixa de propósito.
+- No celular em pé só ~115–125 px centrais da cena aparecem (x ≈ 178–302 no iPhone de 390 px):
+  vaso (x 180), gato (x 228) e caneca (x 282) ficam nessa faixa de propósito.
+- Canto da vitrola: estante, vitrola e caixote de discos centralizados na mesa (`TABLE.center`).
+- Painel de controle: paleta do quarto (madeira, âmbar, creme) em variáveis CSS no `:root`,
+  fundo translúcido com `backdrop-filter: blur()` (com prefixo `-webkit-` para o Safari).
 - Mixer: vinil e chuva começam em 5% (`value="5"` no `index.html`).
 - Atalhos: Espaço, N, M, V, X (mixer), Q, T, H, F, ?, Esc.
 - Interface em português; textos inseridos com `textContent` (nunca `innerHTML`).

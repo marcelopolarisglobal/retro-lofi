@@ -8,8 +8,9 @@ const GLASS = { x: 152, y: 42, w: 176, h: 144 };
 const SILL_Y = GLASS.y + GLASS.h;
 const MULLION = { x: 238, y: 104 };
 const CAT = { x: 228, y: SILL_Y - 24 };
-const MUG = { x: 268, y: SILL_Y - 9 };
-const TURNTABLE = { cx: 404, cy: 173, rx: 17, ry: 6 };
+const MUG = { x: 282, y: SILL_Y - 9 };
+const TABLE = { x: 366, w: 108, center: 420 };
+const TURNTABLE = { cx: 411, cy: 173, rx: 17, ry: 6 };
 const WIRE_Y = 28;
 
 const COLORS = {
@@ -95,8 +96,6 @@ const COLORS = {
   labelLight: '#ffc07a',
   arm: '#cfcad6',
   armDark: '#8c8796',
-  albumBack: '#2f5a6e',
-  albumArt: '#ff9ec7',
   records: ['#15111a', '#e0703a', '#35566e', '#c9b48a', '#9a5048', '#2f5a44'],
 };
 
@@ -354,47 +353,61 @@ function drawShelf(g, random) {
   rect(g, COLORS.woodLight, 370, 104, 100, 1);
   rect(g, COLORS.woodDark, 378, 109, 3, 6);
   rect(g, COLORS.woodDark, 458, 109, 3, 6);
-  for (let x = 376; x < 440;) {
-    const w = 4 + Math.floor(random() * 3);
-    const h = 13 + Math.floor(random() * 9);
-    rect(g, COLORS.books[Math.floor(random() * COLORS.books.length)], x, 104 - h, w, h);
+
+  // Livros e vaso formam um grupo centralizado sobre a mesa da vitrola.
+  const books = [];
+  let booksWidth = 0;
+  while (booksWidth < 60) {
+    const book = {
+      w: 4 + Math.floor(random() * 3),
+      h: 13 + Math.floor(random() * 9),
+      color: COLORS.books[Math.floor(random() * COLORS.books.length)],
+      gap: random() < 0.2 ? 1 : 0,
+    };
+    books.push(book);
+    booksWidth += book.w + book.gap;
+  }
+  let x = TABLE.center - Math.floor((booksWidth + 14) / 2);
+  books.forEach(({ w, h, color, gap }) => {
+    rect(g, color, x, 104 - h, w, h);
     rect(g, COLORS.vignette, x + w - 1, 104 - h, 1, h);
     rect(g, COLORS.mugLight, x + 1, 104 - h + 3, w - 2, 1);
-    x += w + (random() < 0.2 ? 1 : 0);
-  }
-  rect(g, COLORS.pot, 448, 94, 10, 10);
-  rect(g, COLORS.potLight, 449, 94, 2, 10);
-  ellipse(g, COLORS.leaf, 453, 88, 4, 5);
-  ellipse(g, COLORS.leafLight, 452, 86, 2, 2);
+    x += w + gap;
+  });
+  x += 4;
+  rect(g, COLORS.pot, x, 94, 10, 10);
+  rect(g, COLORS.potLight, x + 1, 94, 2, 10);
+  ellipse(g, COLORS.leaf, x + 5, 88, 4, 5);
+  ellipse(g, COLORS.leafLight, x + 4, 86, 2, 2);
 }
 
 // Mesa sob a estante com a vitrola (as partes que giram são desenhadas a cada quadro).
 function drawRecordTable(g, random) {
-  woodRect(g, random, 366, 184, 108, 4, COLORS.sillTop, COLORS.sillFront, COLORS.sillLight);
-  rect(g, COLORS.sillLight, 366, 184, 108, 1);
-  rect(g, COLORS.sillFront, 366, 188, 108, 4);
-  rect(g, COLORS.woodDark, 370, 192, 4, 56);
-  rect(g, COLORS.woodDark, 466, 192, 4, 56);
+  woodRect(g, random, TABLE.x, 184, TABLE.w, 4, COLORS.sillTop, COLORS.sillFront, COLORS.sillLight);
+  rect(g, COLORS.sillLight, TABLE.x, 184, TABLE.w, 1);
+  rect(g, COLORS.sillFront, TABLE.x, 188, TABLE.w, 4);
+  rect(g, COLORS.woodDark, TABLE.x + 4, 192, 4, 56);
+  rect(g, COLORS.woodDark, TABLE.x + TABLE.w - 8, 192, 4, 56);
 
-  rect(g, COLORS.woodDark, 384, 224, 66, 24);
-  rect(g, COLORS.wood, 385, 225, 64, 2);
-  for (let x = 387; x < 447; x += 2) rect(g, COLORS.records[Math.floor(random() * COLORS.records.length)], x, 228, 1, 20);
-  rect(g, COLORS.wood, 384, 240, 66, 8);
-  rect(g, COLORS.woodLight, 384, 240, 66, 1);
+  const crateX = TABLE.center - 33;
+  rect(g, COLORS.woodDark, crateX, 212, 66, 36);
+  rect(g, COLORS.wood, crateX + 1, 213, 64, 2);
+  for (let x = crateX + 3; x < crateX + 63; x += 2) {
+    rect(g, COLORS.records[Math.floor(random() * COLORS.records.length)], x, 216, 1, 32);
+  }
+  rect(g, COLORS.wood, crateX, 240, 66, 8);
+  rect(g, COLORS.woodLight, crateX, 240, 66, 1);
 
-  rect(g, COLORS.plinthFront, 380, 180, 66, 4);
-  woodRect(g, random, 380, 163, 66, 17, COLORS.plinth, COLORS.plinthFront, COLORS.plinthLight);
-  rect(g, COLORS.plinthLight, 380, 163, 66, 1);
-  rect(g, COLORS.arm, 438, 181, 3, 1);
-  rect(g, COLORS.labelLight, 384, 181, 1, 1);
-
-  rect(g, COLORS.albumBack, 450, 162, 18, 22);
-  ellipse(g, COLORS.albumArt, 459, 172, 5, 5);
-  rect(g, COLORS.vignette, 466, 162, 2, 22);
+  const plinthX = TABLE.center - 33;
+  rect(g, COLORS.plinthFront, plinthX, 180, 66, 4);
+  woodRect(g, random, plinthX, 163, 66, 17, COLORS.plinth, COLORS.plinthFront, COLORS.plinthLight);
+  rect(g, COLORS.plinthLight, plinthX, 163, 66, 1);
+  rect(g, COLORS.arm, plinthX + 58, 181, 3, 1);
+  rect(g, COLORS.labelLight, plinthX + 4, 181, 1, 1);
 }
 
 function drawPlant(g, random) {
-  const base = { x: 199, y: SILL_Y - 12 };
+  const base = { x: 189, y: SILL_Y - 12 };
   for (let s = 0; s < 8; s++) {
     const lean = (random() - 0.5) * 1.4;
     const length = 12 + Math.floor(random() * 12);
@@ -408,7 +421,7 @@ function drawPlant(g, random) {
     ellipse(g, COLORS.leafLight, tipX, base.y - length, 2, 2);
   }
 
-  const pot = { x: 190, y: SILL_Y - 12 };
+  const pot = { x: 180, y: SILL_Y - 12 };
   for (let row = 0; row < 15; row++) {
     const inset = Math.floor(row / 5);
     rect(g, COLORS.pot, pot.x + inset, pot.y + row, 18 - inset * 2, 1);
@@ -614,8 +627,8 @@ export function createRainyWindow() {
     rect(ctx, COLORS.labelLight, Math.round(cx + Math.cos(discAngle) * 3), Math.round(cy + Math.sin(discAngle) * 1.2), 1, 1);
     rect(ctx, COLORS.arm, cx, cy, 1, 1);
 
-    const pivot = { x: 434, y: 168 };
-    const head = { x: 416, y: 176 };
+    const pivot = { x: 441, y: 168 };
+    const head = { x: 423, y: 176 };
     ellipse(ctx, COLORS.armDark, pivot.x, pivot.y, 3, 2);
     ellipse(ctx, COLORS.arm, pivot.x, pivot.y - 1, 2, 1);
     for (let i = 0; i <= 18; i++) {

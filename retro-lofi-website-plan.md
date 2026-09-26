@@ -125,6 +125,9 @@ Retorno do usuário: som **abafado** e **com ruído**. Continua 100% sintetizado
 - Gato 50% maior, preto e branco, de frente, com contorno, olhos verdes que piscam e rabo animado. Vaso e caneca 30% maiores, aproximados do centro para aparecerem no celular em pé.
 - Mesa sob a estante com vitrola em perspectiva (disco gira só com a música tocando), capa de álbum e caixote de discos.
 - Celulares estreitos (≤ 380 px): rótulo "Volume" oculto visualmente e abas mais justas para caber em uma linha.
+- Canto da vitrola: discos do caixote com o dobro da altura, capa de álbum removida, vitrola, estante e caixote centralizados na mesa.
+- Parapeito: vaso mais à esquerda e caneca mais à direita (limite: continuar visível no celular em pé).
+- Painel de controle com a paleta do quarto (madeira translúcida, âmbar, creme) e desfoque do fundo (efeito vidro fosco).
 
 ### Fase 4 — Múltiplos ambientes
 - Formato de dados por cena (paleta, camadas, clima, sons ambientes) para adicionar cenas sem mexer no motor.
