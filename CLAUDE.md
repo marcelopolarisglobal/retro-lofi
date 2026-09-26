@@ -9,7 +9,12 @@ em fases posteriores. O roteiro completo está em `retro-lofi-website-plan.md`.
 
 ## Stack
 - **HTML + CSS + JavaScript puro (módulos ES)**. Sem framework, sem build, sem dependências.
-- Site estático publicado no **GitHub Pages** (branch `main`, raiz).
+- Site estático publicado no **GitHub Pages** (branch `main`, raiz) em
+  https://marcelopolarisglobal.github.io/retro-lofi/ **e** em https://polarisglobal.me/retro-lofi/.
+- `polarisglobal.me` é outro repositório (`~/Projects/website`, repo `polarisglobal.me`); lá o
+  Retro Lo-fi é uma **cópia** na pasta `retro-lofi/`. Após cada mudança publicada aqui, atualizar a
+  cópia: `git pull` no website, copiar `index.html`, `css/` e `js/` para `website/retro-lofi/`
+  (sem `CLAUDE.md` nem o plano), commit `feat(retro-lofi): ...` e push.
 - Única dependência externa: fonte **Press Start 2P** (Google Fonts).
 - Rodar localmente exige servidor (módulos ES não abrem via `file://`):
   `python3 -m http.server 8000` → http://localhost:8000
